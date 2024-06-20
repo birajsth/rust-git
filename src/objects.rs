@@ -3,6 +3,7 @@ use std::io::BufReader;
 use anyhow::Context;
 use std::io::prelude::*;
 use flate2::read::ZlibDecoder;
+use std::fmt;
 
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) enum Kind {
@@ -29,7 +30,7 @@ pub(crate) struct Object<R> {
 }
 
 impl Object<()> {
-    pub(crate) fn read_object(hash: &str) -> anyhow::Result<Object<impl BufRead> {
+    pub(crate) fn read(hash: &str) -> anyhow::Result<Object<impl BufRead>> {
         // TODO: support shortest-unique object hashes
         let f = std::fs::File::open(format!(".git/objects/{}/{}", &hash[..2], &hash[2..]))
             .context("open in .git/objects")?;
@@ -63,7 +64,7 @@ impl Object<()> {
             kind,
             expected_size: size,
             reader: z,
-        });
+        })
         
     }
 }
